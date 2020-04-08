@@ -5,7 +5,6 @@ import scala.collection.mutable.{LinkedHashSet}
 import freechips.rocketchip.subsystem.{RocketTilesKey}
 import freechips.rocketchip.tile.{XLen}
 import freechips.rocketchip.config.{Parameters}
-import freechips.rocketchip.util.{GeneratorApp}
 import freechips.rocketchip.system.{TestGeneration, RegressionTestSuite}
 
 import boom.common.{BoomTilesKey}

@@ -26,14 +26,17 @@ class FireSim(implicit val p: Parameters) extends RawModule {
   val reset = WireInit(false.B)
   withClockAndReset(clock, reset) {
     // Instantiate multiple instances of the DUT to implement supernode
-    val targets = Seq.fill(p(NumNodes))(p(BuildSystem)(p))
+    val targets = Seq.fill(p(NumNodes)) {
+      val lazyModule = p(BuildSystem)(p)
+      (lazyModule, Module(lazyModule.module))
+    }
     val peekPokeBridge = PeekPokeBridge(clock, reset)
     // A Seq of partial functions that will instantiate the right bridge only
-    // if that Mixin trait is present in the target's class instance
+    // if that Mixin trait is present in the target's LazyModule class instance
     //
     // Apply each partial function to each DUT instance
-    for ((target) <- targets) {
-      p(IOBinders).values.map(_(target))
+    for ((lazyModule, module) <- targets) {
+      p(IOBinders).values.foreach(f => f(lazyModule) ++ f(module))
     }
   }
 }

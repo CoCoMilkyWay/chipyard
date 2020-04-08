@@ -12,7 +12,7 @@ import chipyard.iobinders.{IOBinders, TestHarnessFunction, IOBinderTuple}
 
 import barstools.iocell.chisel._
 
-case object BuildSystem extends Field[Parameters => RawModule]((p: Parameters) => Module(LazyModule(new DigitalTop()(p)).suggestName("system").module))
+case object BuildSystem extends Field[Parameters => LazyModule]((p: Parameters) => LazyModule(new DigitalTop()(p)).suggestName("system"))
 
 /**
  * The base class used for building chips. This constructor instantiates a module specified by the BuildSystem parameter,
@@ -31,11 +31,15 @@ abstract class BaseChipTop()(implicit val p: Parameters) extends RawModule with 
   val systemReset = Wire(Input(Bool()))
 
   // The system module specified by BuildSystem
-  val system = withClockAndReset(systemClock, systemReset) { p(BuildSystem)(p) }
+  val lSystem = p(BuildSystem)(p)
+  val system = withClockAndReset(systemClock, systemReset) { Module(lSystem.module) }
 
   // Call all of the IOBinders and provide them with a default clock and reset
   withClockAndReset(systemClock, systemReset) {
-    val (_ports, _iocells, _harnessFunctions) = p(IOBinders).values.map(_(system)).flatten.unzip3
+    // Biancolin: I'm lazy and didn't want to port code, but this may be a feature...
+    //            Let IOBinders match on either the LazyModule or Module
+    //            by invoking each partial function on both. :scala:
+    val (_ports, _iocells, _harnessFunctions) = p(IOBinders).values.flatMap(f => f(lSystem) ++ f(system)).unzip3
     // We ignore _ports for now...
     iocells ++= _iocells.flatten
     harnessFunctions ++= _harnessFunctions.flatten

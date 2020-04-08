@@ -88,16 +88,19 @@ class FireSimMulticlockPOC(implicit val p: Parameters) extends RawModule {
   val reset = WireInit(false.B)
   withClockAndReset(refClock, reset) {
     // Instantiate multiple instances of the DUT to implement supernode
-    val targets = Seq.fill(p(NumNodes))(p(BuildSystem)(p))
+    val targets = Seq.fill(p(NumNodes)) {
+      val lazyModule = p(BuildSystem)(p)
+      (lazyModule, Module(lazyModule.module))
+    }
     val peekPokeBridge = PeekPokeBridge(refClock, reset)
     // A Seq of partial functions that will instantiate the right bridge only
     // if that Mixin trait is present in the target's class instance
     //
     // Apply each partial function to each DUT instance
-    for ((target) <- targets) {
-      p(IOBinders).values.map(_(target))
+    for ((lazyModule, module) <- targets) {
+      p(IOBinders).values.foreach(f => f(lazyModule) ++ f(module))
     }
-    targets.collect({ case t: HasAdditionalClocks => t.clocks := clockBridge.io.clocks })
+    targets.collect({ case (_, t: HasAdditionalClocks) => t.clocks := clockBridge.io.clocks })
   }
 }
 

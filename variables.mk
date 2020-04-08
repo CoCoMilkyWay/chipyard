@@ -86,7 +86,7 @@ CHIPYARD_FIRRTL_DIR = $(base_dir)/tools/firrtl
 #########################################################################################
 # names of various files needed to compile and run things
 #########################################################################################
-long_name = $(MODEL_PACKAGE).$(MODEL).$(CONFIG)
+long_name = $(CONFIG_PACKAGE).$(CONFIG)
 
 # match the long_name to what the specific generator will output
 ifeq ($(GENERATOR_PACKAGE),freechips.rocketchip.system)

@@ -66,7 +66,7 @@ class WithL2TLBs(entries: Int) extends Config((site, here, up) => {
 })
 
 class WithTracegenSystem extends Config((site, here, up) => {
-  case BuildSystem => (p: Parameters) => Module(LazyModule(new tracegen.TraceGenSystem()(p)).suggestName("Top").module)
+  case BuildSystem => (p: Parameters) => LazyModule(new tracegen.TraceGenSystem()(p)).suggestName("Top")
 })
 
 
