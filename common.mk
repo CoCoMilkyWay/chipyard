@@ -60,8 +60,9 @@ generator_temp: $(SCALA_SOURCES) $(sim_files) $(EXTRA_GENERATOR_REQS)
 	mkdir -p $(build_dir)
 	cd $(base_dir) && $(SBT) "project $(SBT_PROJECT)" "runMain $(GENERATOR_PACKAGE).Generator \
 		-td $(build_dir) \
+		-n $(long_name) \
 		-T $(MODEL_PACKAGE).$(MODEL) \
-		-C $(CONFIG_PACKAGE).$(CONFIG)"
+		-UC $(CONFIG_PACKAGE).$(CONFIG)"
 
 .PHONY: firrtl
 firrtl: $(FIRRTL_FILE)

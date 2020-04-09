@@ -178,8 +178,9 @@ class WithSimNIC extends OverrideIOBinder({
 })
 
 // Note: The parameters instance is accessible only through the BaseSubsystem
-// (technically, IsAttachable), and the self-type requirement in
-// CanHaveMasterAXI4MemPort is in sufficient to make accessible to the IOBinder
+// or some parent class (IsAttachable, BareSubsystem -> LazyModule). The
+// self-type requirement in CanHaveMasterAXI4MemPort is insufficient to make it
+// accessible to the IOBinder
 // DOC include start: WithSimAXIMem
 class WithSimAXIMem extends OverrideIOBinder({
   (system: CanHaveMasterAXI4MemPort with BaseSubsystem) => SimAXIMem.connectMem(system)(system.p); Nil
