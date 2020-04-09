@@ -43,7 +43,7 @@ class ChipyardStage extends ChiselStage with PreservesAll[Phase] {
     classOf[freechips.rocketchip.stage.phases.AddDefaultTests],
     // This is the only injected phase
     classOf[chipyard.stage.phases.AddDefaultTests],
-    classOf[freechips.rocketchip.stage.phases.GenerateTestSuiteMakefrags],
+    classOf[chipyard.stage.phases.GenerateTestSuiteMakefrags],
     classOf[freechips.rocketchip.stage.phases.GenerateArtefacts],
   )
 }

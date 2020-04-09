@@ -52,13 +52,13 @@ ifeq ($(SUB_PROJECT),rocketchip)
 endif
 # for Hwacha developers
 ifeq ($(SUB_PROJECT),hwacha)
-	SBT_PROJECT       ?= hwacha
+	SBT_PROJECT       ?= chipyard
 	MODEL             ?= TestHarness
 	VLOG_MODEL        ?= TestHarness
 	MODEL_PACKAGE     ?= freechips.rocketchip.system
 	CONFIG            ?= HwachaConfig
 	CONFIG_PACKAGE    ?= hwacha
-	GENERATOR_PACKAGE ?= hwacha
+	GENERATOR_PACKAGE ?= chipyard
 	TB                ?= TestDriver
 	TOP               ?= ExampleRocketSystem
 endif

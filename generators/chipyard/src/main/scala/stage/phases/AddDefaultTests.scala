@@ -4,11 +4,12 @@
 package chipyard.stage.phases
 
 import scala.util.Try
+import scala.collection.mutable
 
 import chipsalliance.rocketchip.config.Parameters
 import chisel3.stage.phases.Elaborate
 import firrtl.AnnotationSeq
-import firrtl.annotations.NoTargetAnnotation
+import firrtl.annotations.{Annotation, NoTargetAnnotation}
 import firrtl.options.{Phase, PreservesAll}
 import firrtl.options.Viewer.view
 import freechips.rocketchip.stage.RocketChipOptions
@@ -26,7 +27,8 @@ class AddDefaultTests extends Phase with PreservesAll[Phase] with HasRocketChipS
     classOf[freechips.rocketchip.stage.phases.AddDefaultTests])
   override val dependents = Seq(classOf[freechips.rocketchip.stage.phases.GenerateTestSuiteMakefrags])
 
-  private def addTestSuites(implicit p: Parameters): Seq[RocketTestSuite] = {
+  private def addTestSuiteAnnotations(implicit p: Parameters): Seq[Annotation] = {
+    val annotations = mutable.ArrayBuffer[Annotation]()
     val suiteHelper = new TestSuiteHelper
     suiteHelper.addRocketTestSuites
     suiteHelper.addBoomTestSuites
@@ -42,8 +44,10 @@ class AddDefaultTests extends Phase with PreservesAll[Phase] with HasRocketChipS
       suiteHelper.addSuites(rv64uv.map(_("vp")))
       suiteHelper.addSuite(rv64sv("p"))
       suiteHelper.addSuite(hwachaBmarks)
+      annotations += CustomMakefragSnippet(
+        "SRC_EXTENSION = $(base_dir)/hwacha/$(src_path)/*.scala" + "\nDISASM_EXTENSION = --extension=hwacha")
     }
-    suiteHelper.suites.values.toSeq
+    RocketTestSuiteAnnotation(suiteHelper.suites.values.toSeq) +: annotations
   }
 
 
@@ -53,6 +57,6 @@ class AddDefaultTests extends Phase with PreservesAll[Phase] with HasRocketChipS
       case o => false
     }
     implicit val p = getConfig(view[RocketChipOptions](annotations).configNames.get).toInstance
-    RocketTestSuiteAnnotation(addTestSuites) +: oAnnos
+    addTestSuiteAnnotations ++ oAnnos
   }
 }
